@@ -35,7 +35,7 @@ class Maze:
                     else:
                         row.append(True)
             except IndexError:
-                row.append(True)
+                row.append(False)
             walls.append(row)
         return start, end, walls
 
