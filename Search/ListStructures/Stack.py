@@ -25,6 +25,6 @@ if __name__ == "__main__":
         stack.add(i)
     print("Stack item sequence:")
     print(stack.items)
-    print("Remove sequence")
+    print("Remove sequence:")
     while not(stack.isEmpty):
-        stack.remove()
+        print(stack.remove())
