@@ -42,10 +42,10 @@ class Maze:
     def neighbors(self, state):
         row, col = state
         candidates = [
-            ("down", (row+1, col)),
-            ("left", (row, col-1)),
-            ("up", (row-1, col)),
-            ("right", (row, col+1))
+            ("up", (row+1, col)),
+            ("right", (row, col-1)),
+            ("down", (row-1, col)),
+            ("left", (row, col+1))
         ]
 
         result = []
