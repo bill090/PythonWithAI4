@@ -1,5 +1,3 @@
-from ListStructures.Queue import Queue
-
 class Node:
     def __init__(self, state, action, parent, num_explored):
         self.state = state
@@ -63,21 +61,26 @@ class Maze:
     
     def solve(self):
         self.node = Node(self.start, ("start", self.start), None, 1)
-        self.frontier = Queue()
-        self.frontier.add(self.node)
+        self.frontier = [self.node]
         self.explored = []
 
         while True:
-            if self.frontier.isEmpty():
+            if not(self.frontier):
                 break
-            self.node = self.frontier.remove()
+            self.node = self.frontier[0]
+            for node in self.frontier:
+                if abs(node.state[0]-self.end[0])+abs(node.state[1]-self.end[1])>=abs(self.node.state[0]-self.end[0])+abs(self.node.state[1]-self.end[1]):
+                    self.node = node
+
+            self.frontier.remove(self.node)
+            
             if self.winCheck(self.node.state): 
                 break
             else:
                 self.explored.append(self.node.state)
                 for action in self.neighbors(self.node.state):
                     if not(action[1] in self.explored):
-                        self.frontier.add(Node(action[1], action[0], self.node, self.node.num_explored + 1))
+                        self.frontier.append(Node(action[1], action[0], self.node, self.node.num_explored + 1))
         soluNode = self.node
         # num_explored = soluNode.num_explored
         self.solution = []
