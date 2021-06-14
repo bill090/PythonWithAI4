@@ -9,7 +9,7 @@ class Stack:
         self.items.append(item)
 
     def remove(self):
-        if self.isEmpty:
+        if self.isEmpty():
             raise Exception("Stack is empty.")
         else:
             out = self.items[-1]
@@ -26,5 +26,5 @@ if __name__ == "__main__":
     print("Stack item sequence:")
     print(stack.items)
     print("Remove sequence:")
-    while not(stack.isEmpty):
+    while not(stack.isEmpty()):
         print(stack.remove())

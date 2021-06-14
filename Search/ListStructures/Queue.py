@@ -26,5 +26,5 @@ if __name__ == "__main__":
     print("Stack item sequence:")
     print(queue.items)
     print("Remove sequence:")
-    while not(queue.isEmpty):
+    while not(queue.isEmpty()):
         print(queue.remove())
