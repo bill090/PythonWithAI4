@@ -1,3 +1,5 @@
+from maze import Maze
+
 class Node:
     def __init__(self, state, action, parent, num_explored):
         self.state = state
@@ -5,7 +7,7 @@ class Node:
         self.parent = parent
         self.num_explored = num_explored
 
-class Maze:
+class MazeGreedy():
     def __init__(self, mazePath):
         mazeFile = open(mazePath)
         maze = mazeFile.read()
@@ -73,7 +75,7 @@ class Maze:
                     self.node = node
 
             self.frontier.remove(self.node)
-            
+
             if self.winCheck(self.node.state): 
                 break
             else:
@@ -103,5 +105,5 @@ class Maze:
 
 if __name__ == "__main__":
     import sys
-    maze = Maze(sys.argv[1])
+    maze = MazeGreedy(sys.argv[1])
     print(maze.solve())
