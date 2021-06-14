@@ -66,29 +66,34 @@ class Maze:
         self.frontier = Queue()
         self.frontier.add(self.node)
         self.explored = []
+        self.solutions = []
+        self.solutionsOut = []
 
         while True:
             if self.frontier.isEmpty():
-                raise Exception("There is no solution to this maze.")
+                break
             self.node = self.frontier.remove()
             if self.winCheck(self.node.state): 
-                break
+                self.solutions.append(self.node)
+                self.explored.append(self.node.state)
             else:
                 self.explored.append(self.node.state)
                 for action in self.neighbors(self.node.state):
                     if not(action[1] in self.explored):
                         self.frontier.add(Node(action[1], action[0], self.node, self.node.num_explored + 1))
-        soluNode = self.node
-        self.num_explored = soluNode.num_explored
-        self.solution = []
-        while True:
-            if soluNode.parent != None:
-                self.solution.append(soluNode.action)
-                soluNode = soluNode.parent
-            else:
-                break
-        self.solution.reverse()
-        return self.solution, self.num_explored
+        for solution in self.solutions:
+            soluNode = solution
+            num_explored = soluNode.num_explored
+            solution = []
+            while True:
+                if soluNode.parent != None:
+                    solution.append(soluNode.action)
+                    soluNode = soluNode.parent
+                else:
+                    solution.reverse()
+                    self.solutionsOut.append((solution, num_explored))
+                    break
+        return self.solutionsOut
 
 if __name__ == "__main__":
     import sys
