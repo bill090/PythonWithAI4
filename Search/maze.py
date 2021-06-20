@@ -100,5 +100,9 @@ class Maze:
 
 if __name__ == "__main__":
     import sys
+    import datetime
+    start = datetime.datetime.now()
     maze = Maze(sys.argv[1])
     print(maze.solve())
+    end = datetime.datetime.now()
+    print(f"TIME: {end-start}")

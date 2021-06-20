@@ -7,7 +7,7 @@ class Node:
         self.parent = parent
         self.num_explored = num_explored
 
-class MazeGreedy():
+class MazeASharp():
     def __init__(self, mazePath):
         mazeFile = open(mazePath)
         maze = mazeFile.read()
@@ -51,7 +51,7 @@ class MazeGreedy():
         result = []
 
         for action, (r, c) in candidates:
-            if 0 <= r and r < self.height and 0<= c and c<self.width and not self.walls[r][c]:
+            if 0 <= r and r < self.height and 0<= c and c<self.width and not self.walls[r][c] and not((r, c) in self.explored):
                 result.append((action, (r, c)))
 
         
@@ -68,11 +68,12 @@ class MazeGreedy():
 
         while True:
             if not(self.frontier):
-                break
+                raise Exception("No answer.")
             self.node = self.frontier[0]
-            for node in self.frontier:
-                if abs(node.state[0]-self.end[0])+abs(node.state[1]-self.end[1])>=abs(self.node.state[0]-self.end[0])+abs(self.node.state[1]-self.end[1]):
-                    self.node = node
+            if len(self.frontier)!=1:
+                for node in self.frontier:
+                    if abs(node.state[0]-self.end[0])+abs(node.state[1]-self.end[1])<=abs(self.node.state[0]-self.end[0])+abs(self.node.state[1]-self.end[1]):
+                        self.node = node
 
             self.frontier.remove(self.node)
 
@@ -82,7 +83,8 @@ class MazeGreedy():
                 self.explored.append(self.node.state)
                 for action in self.neighbors(self.node.state):
                     if not(action[1] in self.explored):
-                        self.frontier.append(Node(action[1], action[0], self.node, self.node.num_explored + 1))
+                        self.frontier.append(Node(action[1], action, self.node, self.node.num_explored + 1))
+                
         soluNode = self.node
         # num_explored = soluNode.num_explored
         self.solution = []
@@ -105,5 +107,10 @@ class MazeGreedy():
 
 if __name__ == "__main__":
     import sys
-    maze = MazeGreedy(sys.argv[1])
+    import datetime
+    
+    start = datetime.datetime.now()
+    maze = MazeASharp(sys.argv[1])
     print(maze.solve())
+    end = datetime.datetime.now()
+    print(end-start)
