@@ -52,6 +52,7 @@ class Board:
                     return False
         
         return True
+    # TODO: implement minimax and maximin
     def minimax(self):
         pass
     def maximin(self):
