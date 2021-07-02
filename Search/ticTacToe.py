@@ -1,59 +1,160 @@
-class Board:
-    def __init__(self, player = 1, board = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]):
-        self.board = board
-        self.turn = 1
-        self.player = player
-    def action(self, pos, player):
-        if self.board[pos[0]][pos[1]] != 0:
-            raise Exception("Position was already played on.")
-        else:
-            newBoard = self.board
-            newBoard[pos[0]][pos[1]] += player
-            return newBoard
-    def actions(self):
-        return [(x, y) for y in range(len(self.board)) for x in range(len(self.board)) if self.board[x][y] == 0]
-    def utility(self):
-        if (self.board[0][0] == 1 and self.board[1][0] == 1 and self.board[2][0] == 1) or (self.board[0][1] == 1 and self.board[1][1] == 1 and self.board[2][1] == 1) or (self.board[0][2] == 1 and self.board[1][2] == 1 and self.board[2][2] == 1):
-            return 1
-        if (self.board[0][0] == 1 and self.board[0][1] == 1 and self.board[0][2] == 1) or (self.board[1][0] == 1 and self.board[1][1] == 1 and self.board[1][2] == 1) or (self.board[2][0] == 1 and self.board[2][1] == 1 and self.board[2][2] == 1):
-            return 1
-        if (self.board[0][0] == 1 and self.board[1][1] == 1 and self.board[2][2] == 1) or (self.board[2][0] == 1 and self.board[1][1] == 1 and self.board[0][2] == 1):
-            return 1
-        if (self.board[0][0] == -1 and self.board[1][0] == -1 and self.board[2][0] == -1) or (self.board[0][1] == -1 and self.board[1][1] == -1 and self.board[2][1] == -1) or (self.board[0][2] == -1 and self.board[1][2] == -1 and self.board[2][2] == -1):
-            return -1
-        if (self.board[0][0] == -1 and self.board[0][1] == -1 and self.board[0][2] == -1) or (self.board[1][0] == -1 and self.board[1][1] == -1 and self.board[1][2] == -1) or (self.board[2][0] == -1 and self.board[2][1] == -1 and self.board[2][2] == -1):
-            return -1
-        if (self.board[0][0] == -1 and self.board[1][1] == -1 and self.board[2][2] == -1) or (self.board[2][0] == -1 and self.board[1][1] == -1 and self.board[0][2] == -1):
-            return -1
-        return 0
-    def playerToMove(self):
-        x = 0
-        o = 0
-        for i in self.board:
-            for j in self.board[i]:
-                if j == 1:
-                    x += 1
-                if j == -1:
-                    o += 1
-        if x > o:
-            return 1
-        else:
-            return -1
-    def terminal(self):
-        if (self.board[0][0] != 0 and self.board[1][0] != 0 and self.board[2][0] != 0) or (self.board[0][1] != 0 and self.board[1][1] != 0 and self.board[2][1] != 0) or (self.board[0][2] != 0 and self.board[1][2] != 0 and self.board[2][2] != 0):
-            return 1
-        if (self.board[0][0] != 0 and self.board[0][1] != 0 and self.board[0][2] != 0) or (self.board[1][0] != 0 and self.board[1][1] != 0 and self.board[1][2] != 0) or (self.board[2][0] != 0 and self.board[2][1] != 0 and self.board[2][2] != 0):
-            return 1
-        if (self.board[0][0] != 0 and self.board[1][1] != 0 and self.board[2][2] != 0) or (self.board[2][0] != 0 and self.board[1][1] != 0 and self.board[0][2] != 0):
-            return 1
-        for i in self.board:
-            for j in self.board[i]:
-                if j == 0:
-                    return False
-        
+import math
+import copy
+
+X = "X"
+O = "O"
+EMPTY = 0
+
+def initial_state():
+    return [[EMPTY, EMPTY, EMPTY],
+            [EMPTY, EMPTY, EMPTY],
+            [EMPTY, EMPTY, EMPTY]]
+
+
+def player(board):
+    x = 0
+    o = 0
+    for iIndex in range(len(board)):
+        for j in board[iIndex]:
+            if j == -1:
+                o += 1
+            if j == 1:
+                x += 1
+    if x > o:
+        return -1
+    else:
+        return 1
+
+def actions(board):
+    out = []
+    for y in range(len(board)):
+        for x in range(len(board[y])):
+            if board[y][x] == 0:
+                out.append((x, y))
+    return out
+
+def result(board, action):
+    out = board
+    if out[action[1]][action[0]] == 0:
+        out[action[1]][action[0]] += player(board)
+    else:
+        raise Exception
+    return out
+
+def winner(board):
+    if (board[0][0] == 1 and board[1][0] == 1 and board[2][0] == 1) or (board[0][1] == 1 and board[1][1] == 1 and board[2][1] == 1) or (board[0][2] == 1 and board[1][2] == 1 and board[2][2] == 1):
+        return O
+    if (board[0][0] == 1 and board[0][1] == 1 and board[0][2] == 1) or (board[1][0] == 1 and board[1][1] == 1 and board[1][2] == 1) or (board[2][0] == 1 and board[2][1] == 1 and board[2][2] == 1):
+        return O
+    if (board[0][0] == 1 and board[1][1] == 1 and board[2][2] == 1) or (board[2][0] == 1 and board[1][1] == 1 and board[0][2] == 1):
+        return O
+    if (board[0][0] == -1 and board[1][0] == -1 and board[2][0] == -1) or (board[0][1] == -1 and board[1][1] == -1 and board[2][1] == -1) or (board[0][2] == -1 and board[1][2] == -1 and board[2][2] == -1):
+        return X
+    if (board[0][0] == -1 and board[0][1] == -1 and board[0][2] == -1) or (board[1][0] == -1 and board[1][1] == -1 and board[1][2] == -1) or (board[2][0] == -1 and board[2][1] == -1 and board[2][2] == -1):
+        return X
+    if (board[0][0] == -1 and board[1][1] == -1 and board[2][2] == -1) or (board[2][0] == -1 and board[1][1] == -1 and board[0][2] == -1):
+        return X
+    return None
+
+def terminal(board):
+    if (board[0][0] == 1 and board[1][0] == 1 and board[2][0] == 1) or (board[0][1] == 1 and board[1][1] == 1 and board[2][1] == 1) or (board[0][2] == 1 and board[1][2] == 1 and board[2][2] == 1):
         return True
-    # TODO: implement minimax and maximin
-    def minimax(self):
-        pass
-    def maximin(self):
-        pass
+    if (board[0][0] == 1 and board[0][1] == 1 and board[0][2] == 1) or (board[1][0] == 1 and board[1][1] == 1 and board[1][2] == 1) or (board[2][0] == 1 and board[2][1] == 1 and board[2][2] == 1):
+        return True
+    if (board[0][0] == 1 and board[1][1] == 1 and board[2][2] == 1) or (board[2][0] == 1 and board[1][1] == 1 and board[0][2] == 1):
+        return True
+    if (board[0][0] == -1 and board[1][0] == -1 and board[2][0] == -1) or (board[0][1] == -1 and board[1][1] == -1 and board[2][1] == -1) or (board[0][2] == -1 and board[1][2] == -1 and board[2][2] == -1):
+        return True
+    if (board[0][0] == -1 and board[0][1] == -1 and board[0][2] == -1) or (board[1][0] == -1 and board[1][1] == -1 and board[1][2] == -1) or (board[2][0] == -1 and board[2][1] == -1 and board[2][2] == -1):
+        return True
+    if (board[0][0] == -1 and board[1][1] == -1 and board[2][2] == -1) or (board[2][0] == -1 and board[1][1] == -1 and board[0][2] == -1):
+        return True
+    for i in range(len(board)):
+        for j in board[i]:
+            if j == 0:
+                return False
+    return True
+
+def utility(board):
+    if winner(board) == O:
+        return 1
+    elif winner(board) == X:
+        return -1
+    else:
+        return 0
+
+# def minimax(board):
+#     out = []
+#     for action in actions(board):
+#         out.append({'v': maxVal(result(board, action)), 'action': action})
+#     out = max(out, key=lambda k: k['v'])
+
+#     return out
+
+# def maxVal(board):
+#     print(board)
+#     print(actions(board))
+#     print(terminal(board))
+#     print(utility(board))
+#     if terminal(board):
+#         return utility(board)
+#     v = -1 * float('inf')
+#     for action in actions(board):
+#         newBoard = result(board, action)
+#         v = max(v, minVal(newBoard))
+#     return v
+
+# def minVal(board):
+#     print(board)
+#     print(actions(board))
+#     print(terminal(board))
+#     print(utility(board))
+#     if terminal(board):
+#         return utility(board)
+#     v = float('inf')
+#     for action in actions(board):
+#         newBoard = result(board, action)
+#         v = min(v, maxVal(newBoard))
+#     return v
+
+def minimax(isMaxTurn, board, depth=1):
+    if terminal(board):
+        return {'v': utility(board)}
+    places = []
+    for action in actions(board):
+        if not(action in places):
+            places.append(action)
+    
+    # scores = [{'v': minimax(not isMaxTurn, result(board, action)), 'action': action} for action in places]
+    # print(places)
+    scores=[]
+    for action in places:
+        outBoard = result(board, action)
+        minimaxOut = minimax(not isMaxTurn, outBoard, depth+1)
+        scores.append({'v': minimaxOut['v'], 'action': action, 'depth': depth+1})
+        board[action[1]][action[0]] = 0
+    out = sorted(scores, key=lambda k: k['v'])
+    # if player(board) == -1:
+    #     out = reversed(out)
+    out = sorted(out, key=lambda k: k['depth'])
+    # print(out)
+    if isMaxTurn:
+        return out[-1]
+    else:
+        return out[0]
+
+if __name__ == "__main__":
+    board = initial_state()
+    while True:
+        print(player(board))
+        if 1 != player(board):
+            board = result(board, minimax(False, board)['action'])
+        else:
+            x=input()
+            y=input()
+            board = result(board, (int(x), int(y)))
+        out = [str(row) for row in board]
+        print('\n'.join(out))
+        if terminal(board):
+            print(utility(board))
+            break
