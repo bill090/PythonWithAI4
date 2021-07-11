@@ -1,5 +1,4 @@
-import math
-import copy
+import time
 
 X = "X"
 O = "O"
@@ -105,16 +104,44 @@ def minimax(isMaxTurn, board, depth=1):
         return out[0]
 
 if __name__ == "__main__":
-    board = initial_state()
+    board = initial_state()    
     while True:
+        out = board
+        print("  1 2 3")
+        for lineIndex in range(len(out)):
+            print(f"{lineIndex+1} ", end="")
+            for letter in out[lineIndex]:
+                if letter == -1:
+                    print("X ", end="")
+                if letter == 0:
+                    print("* ", end="")
+                if letter == 1:
+                    print("O ", end="")
+            print()
         print(f"PLAYER {player(board)}'S TURN!")
         if 1 != player(board):
+            time.sleep(1)
             board = result(board, minimax(False, board)['action'])
         else:
-            x=input()
-            y=input()
+            x=input("x: ")
+            y=input("y: ")
             board = result(board, (int(x)-1, int(y)-1))
-        print('\n'.join([str(row) for row in board]))
+
         if terminal(board):
-            print(utility(board))
+            if utility(board) != 0:
+                print(f"PLAYER {utility(board)} WINS")
+                out = board
+                print("  1 2 3")
+                for lineIndex in range(len(out)):
+                    print(f"{lineIndex+1} ", end="")
+                    for letter in out[lineIndex]:
+                        if letter == -1:
+                            print("X ", end="")
+                        if letter == 0:
+                            print("* ", end="")
+                        if letter == 1:
+                            print("O ", end="")
+                    print()
+            else:
+                print("TIE")
             break
