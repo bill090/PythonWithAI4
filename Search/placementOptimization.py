@@ -36,7 +36,7 @@ class Board():
         return [location for location in possible if not(location in self.houses)]
 
     def solve(self):
-        for _ in self.services:
+        for service in self.services:
             pass
 
 class State():
