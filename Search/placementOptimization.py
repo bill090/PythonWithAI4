@@ -1,43 +1,70 @@
 class Board():
     def __init__(self, data):
-        self.initial = data
         self.board = data
         self.services, self.houses = self.getData(self.board)
+        self.width = len(data)
+        self.height = max([len(line) for line in data])
     
     def getData(self, board):
-        houses = [(x, y) for y in range(len(board)) for x in board[y] if board[y][x] == 'H']
-        services = [(x, y) for y in range(len(board)) for x in board[y] if board[y][x] == 'S']
+        houses = [(x, y) for y in range(len(board)) for x in range(len(board[y])) if board[y][x] == 'H']
+        services = [(x, y) for y in range(len(board)) for x in range(len(board[y])) if board[y][x] == 'S']
         return services, houses
+    
+    def moveService(self, location, newlocation):
+        new = self.board
+        new[newlocation[1]][newlocation[0]] = 'S'
+        new[location[1]][location[0]] = ' '
+        self.board = new
+        self.services, self.houses = self.getData(self.board)
+        
 
-    def hillClimb(self, node):
-        current = node
-        while True:
-            sortedList = []
-            if current.frontier == []:
-                return current
-            for state in current.frontier:
-                sortedList.append({'state': state, 'v': state.value})
-            sortedList = sorted(sortedList, key=lambda k: k['v'])
-            worst = sortedList[0]['state']
-            frontier = [State(neighbour, self) for neighbour in self.neighbours(worst) if State(neighbour, self).value >= current.value]
-            for neighbour in self.neighbours(worst):
-                frontier.append(State(neighbour, self))
-            explored = node.explored
-            explored.append(worst)
-            current = Node(worst, frontier, explored)
+    def showBoard(self):
+        for i in self.board:
+            for j in i:
+                print(j, end='')
+            print()
 
-    def neighbours(self, state):
+    def availiableSpaces(self):
+        [(x, y) for y in len(range(self.board)) for x in len(range(self.board[y])) if self.board[y][x] == ' ']
+
+    def neighbours(self, location):
         possible = [
-            (state.location[0]+1, state.loaction[1]),
-            (state.location[0]-1, state.loaction[1]),
-            (state.location[0], state.loaction[1]-1),
-            (state.location[0], state.loaction[1]+1)
+            (location[0]+1, location[1]),
+            (location[0]-1, location[1]),
+            (location[0], location[1]-1),
+            (location[0], location[1]+1)
         ]
-        return [location for location in possible if not(location in self.houses)]
+        return [location for location in possible if not(location in self.houses or location in self.services)]
 
-    def solve(self):
-        for service in self.services:
-            pass
+    def solve(self, maximum=None):
+        count = 0
+        while maximum == None or count <= maximum:
+            new = []
+            for service in self.services:
+                possible = []
+                for neighbour in self.neighbours(service):
+                    if self.getCost(neighbour) > self.getCost(service) and not(neighbour in new):
+                        possible.append(neighbour)
+                try:
+                    new.append(sorted(possible, key=self.getCost)[0])
+                except:
+                    pass
+                if possible != []:
+                    self.moveService(service, new[-1])
+            
+            self.showBoard()
+            
+            if new == []:
+                break
+        
+        self.showBoard()
+        return self.services, self.board
+    
+    def getCost(self, location):
+        out = 0
+        for house in self.houses:
+            out += abs(house[0]-location[0])+abs(house[1]-location[1])
+        return out * -1
 
 class State():
     def __init__(self, location, board):
@@ -46,8 +73,14 @@ class State():
         for house in board.houses:
             self.value += abs(self.location[0])-abs(house[0]) + abs(self.location[1])-abs(house[1])
 
-class Node():
-    def __init__(self, state, frontier, explored):
-        self.state = state
-        self.frontier = frontier
-        self.explored = explored
+if __name__ == "__main__":
+    file_name = input()
+    dataFile = open(file_name)
+    data = dataFile.read()
+    dataFile.close()
+    dataIn = []
+    for line in data.splitlines():
+        dataIn.append([char for char in line])
+    board = Board(dataIn)
+    board.solve()
+    board.showBoard()
