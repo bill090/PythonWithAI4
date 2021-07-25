@@ -36,7 +36,7 @@ if result.success:
     for constraintNum in range(len(constraints)):
         out = 0
         for coefficient in A_ub[constraintNum]:
-            out += result.x[constraintNum] * coefficient
+            out += result.x[constraintNum] * int(coefficient)
         print(f'{out} of {b_ub[constraintNum]} of {constraints[constraintNum]} used.')
     out = 0
     for var in range(len(result.x)):
