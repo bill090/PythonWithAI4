@@ -193,17 +193,18 @@ class NimAI():
             return sorted(actions, key=lambda q:q['q'])[0]['action']
 
 
-def train(n, timeBool):
+def train(n, timeBool, player=None):
     """
     Train an AI by playing `n` games against itself or for `n` amount of seconds, depending on `time`.
     """
 
-    player = NimAI()
+    if player == None:
+        player = NimAI()
 
-    if time == False:
+    if timeBool == False:
         # Play n games
         for i in range(n):
-            print(f"Playing training game {i + 1}")
+            print(f"Playing training game {i + 1}/{n}.")
             game = Nim()
 
             # Keep track of last move made by either player
@@ -254,7 +255,7 @@ def train(n, timeBool):
             if timeUsed >= n:
                 break
             timeUsed = time.perf_counter()-start
-            print(f"Playing training game {i + 1}")
+            print(f"Playing training game {i + 1}.  {start-timeUsed}/{n} seconds used.")
             game = Nim()
 
             # Keep track of last move made by either player
