@@ -255,7 +255,7 @@ def train(n, timeBool, player=None):
             if timeUsed >= n:
                 break
             timeUsed = time.perf_counter()-start
-            print(f"Playing training game {i + 1}.  {n-start-timeUsed}/{n} seconds used.")
+            print(f"Playing training game {i + 1}.  {timeUsed}/{n} seconds used.")
             game = Nim()
 
             # Keep track of last move made by either player
